@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inline Table with Divs</title>
+    <style>
+        /* Basic page styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        /* Table container styling */
+        #table-container {
+            width: 80%;
+            margin: 20px auto;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fff;
+            overflow: hidden;
+        }
+
+
+        /* Table row styling */
+        .table-header,
+        .table-row {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .table-header {
+            background-color: #eee;
+            font-weight: bold;
+        }
+
+        .table-cell {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            border-right: 1px solid #ddd;
+        }
+
+        .table-cell:last-child {
+            border-right: none;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* Button styling */
+        button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .add-btn {
+            display: block;
+            margin: 20px auto;
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+
+
+<body>
+    <h2 id="title-name"></h2>
+
+    <!-- Table Container -->
+    <div id="table-container">
+        <div class="table-header">
+            <div class="table-cell">Member Id</div>
+            <div class="table-cell">Lend Date</div>
+            <div class="table-cell">Number Of Days</div>
+            <div class="table-cell">Actions</div>
+        </div>
+        <!-- First row -->
+        <div class="table-row"></div>
+
+    </div>
+
+    <!-- Add button -->
+    <button id="add-row-btn" class="add-btn">Add Row</button>
+
+    <script>
+        const Members = JSON.parse(localStorage.getItem("Members"));
+        const cars = JSON.parse(localStorage.getItem("cars")) || [];
+        const rentDetails = JSON.parse(localStorage.getItem("rentDetails")) || [];
+
+
+        // Get references to the add button and table container
+        const addRowBtn = document.getElementById("add-row-btn");
+        const tableContainer = document.getElementById("table-container");
+
+        const title = document.getElementById('title-name');
+
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        const loadedCarId = getQueryParam('carId');
+
+
+        const loadedCar = cars.find(
+            (car) => car.carId = loadedCarId
+        );
+        // console.log(loadedCar);
+        title.innerHTML = loadedCar.carName;
+showTable();
+
+        // Add event listener to add a new row
+        addRowBtn.addEventListener("click", () => {
+            const newRow = document.createElement("div");
+            newRow.classList.add("table-row");
+
+            // Add columns to the new row
+            newRow.innerHTML = `
+    <div class="table-cell">
+    
+    </div>
+    <div class="table-cell">
+      <input type="date" id="rentDate"/>
+    </div>
+    <div class="table-cell">
+      <input type="number" id="rentNum"/>
+    </div>
+    <div class="table-cell">
+      <button class="save-btn">Save</button>
+    </div>
+  `;
+
+            let selectTag = document.createElement('select');
+            selectTag.classList.add('drop-down');
+            Members.forEach(member => {
+                let option = document.createElement('option');
+                option.value = member.id;
+                option.innerHTML = member.id;
+                selectTag.appendChild(option);
+
+                newRow.querySelector('.table-cell').appendChild(selectTag);
+            });
+
+
+            // Append the new row to the table container
+            tableContainer.appendChild(newRow);
+            // Attach event listener to the new delete button
+            newRow.querySelector(".save-btn").addEventListener("click", () => {
+                saveRow(newRow);
+            });
+        });
+
+        function saveRow(row) {
+            let carId = loadedCarId;
+            let memberId = row.querySelector('.drop-down').value;
+            let rentDate = row.querySelector('#rentDate').value;
+            let rentNum = row.querySelector('#rentNum').value;
+
+            const newRentDetail = {
+                carId: loadedCarId,
+                memberId: memberId,
+                rentDate: rentDate,
+                rentNum: rentNum,
+            }
+            console.log(memberId);
+            rentDetails.push(newRentDetail);
+            localStorage.setItem('rentDetails', JSON.stringify(rentDetails));
+            console.log(rentDetails);
+        };
+
+        function showTable() {
+            if (loadedCarId == rentDetails.carId) {
+                addRowBtn.addEventListener("click", () => {
+                    const newRow = document.createElement("div");
+                    newRow.classList.add("table-row");
+
+                    // Add columns to the new row
+                    newRow.innerHTML = `
+                  <div class="table-cell">
+    
+                             </div>
+                 <div class="table-cell">
+                      <input type="date" id="rentDate" value="${rentDetails.rentDate}" readonly/>
+                     </div>
+                <div class="table-cell">
+                     <input type="number" id="rentNum" value="${rentDetails.rentNum}" readonly/>
+                     </div>
+                 <div class="table-cell">
+                     <button class="save-btn">Save</button>
+                </div>
+                 `;
+                    let selectTag = document.createElement('select');
+                    selectTag.classList.add('drop-down');
+                    let option = document.createElement('option');
+                    option.value = rentDetails.memberId;
+                    option.setAttribute("readonly", "true");
+                    option.innerHTML = rentDetails.memberId;
+                    selectTag.appendChild(option);
+
+                    newRow.querySelector('.table-cell').appendChild(selectTag);
+                    JSON.parse(localStorage.getItem("rentDetails"));
+                    event.preventDefault();
+                });
+
+            }
+
+
+        }
+        // Attach event listener to existing delete button
+        document.querySelectorAll(".delete-btn").forEach((button) => {
+            button.addEventListener("click", (event) => {
+                event.target.closest(".table-row").remove();
+            });
+        });
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Grid</title>
+    <style>
+.card{
+   
+    border: 2px solid black;
+    box-sizing: border-box;
+    text-align: center;
+    width: 400px;
+}
+.container{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 30px;
+}
+h2{
+    text-align: center;
+}
+    </style>
+</head>
+
+<body>
+    <h2>Car Details</h2>
+    <div class="container" id="carGridView"></div>
+
+    <script>
+        const cars = [
+            {
+                "carId": "CAR001",
+                "carName": "Tesla Model S",
+                "yearOfManufacture": "2022",
+                "registrationNumber": "ABC1234",
+                "image": "JUGY.png"
+            },
+            {
+                "carId": "CAR002",
+                "carName": "Ford Mustang",
+                "yearOfManufacture": "2021",
+                "registrationNumber": "XYZ5678",
+                "image": "rr.png"
+            },
+            {
+                "carId": "CAR003",
+                "carName": "Chevrolet Camaro",
+                "yearOfManufacture": "2020",
+                "registrationNumber": "LMN9101",
+                "image": "r.png"
+            },
+            {
+                "carId": "CAR004",
+                "carName": "BMW 3 Series",
+                "yearOfManufacture": "2023",
+                "registrationNumber": "PQR3456",
+                "image":"a.png",
+            }
+
+        ];
+
+        const carGridView = document.getElementById("carGridView");
+        cars.forEach(car =>{
+            const grid = document.createElement('div');
+
+            grid.innerHTML = `
+            <img src = "${car.image}" width="300px">
+            <h2>${car.carId}</h2>
+            <h3>${car.carName}</h3>
+            <p>${car.yearOfManufacture}</p>
+            <p>${car.registrationNumber}</p>
+            `;
+            grid.className ="card";
+            carGridView.appendChild(grid);
+        });
+        localStorage.setItem('cars',JSON.stringify(cars));
+    </script>
+</body>
+
+</html>
